@@ -1,0 +1,77 @@
+{
+    "app-id": "io.github.sharkdp.pastel",
+    "default-branch": "master",
+    "runtime": "org.freedesktop.Platform",
+    "runtime-version": "22.08",
+    "sdk": "org.freedesktop.Sdk",
+    "sdk-extensions": [ "org.freedesktop.Sdk.Extension.rust-stable" ],
+    "command": "pastel",
+    "rename-icon": "pastel",
+    "finish-args": [
+        "--socket=fallback-x11",
+        "--socket=wayland",
+        "--share=ipc",
+        "--device=dri",
+        "--filesystem=host"
+    ],
+    "modules": [
+        {
+            "name": "cargo-install",
+            "sources": [
+                {
+                    "type": "git",
+                    "dest": "pastel",
+                    "url": "https://github.com/sharkdp/pastel.git",
+                    "tag": "v0.9.0",
+                    "commit": "47f9ddd59ea14df8d9d1f1073d14501751a49fd0"
+                },
+                "generated-sources.json"
+            ],
+            "buildsystem": "simple",
+            "build-options": {
+                "append-path": "/usr/lib/sdk/rust-stable/bin",
+                "env": {
+                    "CARGO_HOME": "/run/build/cargo-install/cargo"
+                }
+            },
+            "build-commands": [
+                "cargo --offline fetch --manifest-path ./pastel/Cargo.toml",
+                "cargo --offline install --path ./pastel",
+                "install -Dm0755 cargo/bin/pastel ${FLATPAK_DEST}/bin/pastel"
+            ],
+            "cleanup": [
+                "./generated-sources.json",
+                "./cargo"
+            ]
+        },
+        {
+            "name": "metadata-install",
+            "sources": [
+                {
+                    "type": "file",
+                    "path": "io.github.sharkdp.pastel.metainfo.xml"
+                },
+                {
+                    "type": "file",
+                    "path": "io.github.sharkdp.pastel.desktop"
+                },
+                {
+                    "type": "file",
+                    "path": "pastel-256.png"
+                }
+            ],
+            "buildsystem": "simple",
+            "build-commands": [
+                "install -Dm0644 io.github.sharkdp.pastel.metainfo.xml \"${FLATPAK_DEST}/share/metainfo/io.github.sharkdp.pastel.metainfo.xml\"",
+                "install -Dm0644 io.github.sharkdp.pastel.desktop \"${FLATPAK_DEST}/share/applications/io.github.sharkdp.pastel.desktop\"",
+                "install -Dm0644 pastel-256.png \"${FLATPAK_DEST}/share/icons/hicolor/256x256/apps/pastel.png\""
+            ],
+            "cleanup": [
+                "./io.github.sharkdp.pastel.metainfo.xml",
+                "./io.github.sharkdp.pastel.desktop",
+                "./pastel-256.png"
+            ]
+        }
+    ]
+}
+
